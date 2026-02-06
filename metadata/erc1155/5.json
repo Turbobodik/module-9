@@ -1,0 +1,14 @@
+{
+  "name": "Character #5 — Frost Assassin",
+  "description": "ERC-1155 game character collectible.",
+  "image": "https://green-fantastic-moose-963.mypinata.cloud/ipfs/bafybeibn67izvgndz7futuxw47pg43wm37foszmmn6cow6cq6dogajjffu",
+  "attributes": [
+    { "trait_type": "class", "value": "assassin" },
+    { "trait_type": "element", "value": "ice" },
+    { "trait_type": "speed", "value": 92 },
+    { "trait_type": "strength", "value": 58 },
+    { "trait_type": "rarity", "value": "epic" }
+  ]
+}
+
+

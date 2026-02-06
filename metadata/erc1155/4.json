@@ -1,0 +1,14 @@
+{
+  "name": "Character #4 — Iron Golem",
+  "description": "ERC-1155 game character collectible.",
+  "image": "https://green-fantastic-moose-963.mypinata.cloud/ipfs/bafybeie2znub53o4q4wz7zmtfpbazbpi2pbgx6c4kcv7j4ahwxhwmg3bc4",
+  "attributes": [
+    { "trait_type": "class", "value": "golem" },
+    { "trait_type": "material", "value": "iron" },
+    { "trait_type": "speed", "value": 30 },
+    { "trait_type": "strength", "value": 95 },
+    { "trait_type": "rarity", "value": "rare" }
+  ]
+}
+
+

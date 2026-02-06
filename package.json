@@ -1,0 +1,28 @@
+{
+  "name": "module-9-nft-contracts",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ERC-721 soulbound student visit card + ERC-1155 game character collection (OpenZeppelin + Hardhat).",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "node": "hardhat node",
+    "deploy:erc721:localhost": "hardhat run scripts/deploy-visit-card.js --network localhost",
+    "deploy:erc1155:localhost": "hardhat run scripts/deploy-characters.js --network localhost",
+    "mint:erc721:localhost": "hardhat run scripts/mint-visit-card.js --network localhost",
+    "mint+transfer:erc1155:localhost": "hardhat run scripts/mint-and-transfer-characters.js --network localhost",
+    "set:erc1155:uris:opsepolia": "hardhat run scripts/set-character-uris.js --network optimismSepolia",
+    "check:erc721:opsepolia": "hardhat run scripts/check-visit-card.js --network optimismSepolia",
+    "check:erc1155:opsepolia": "hardhat run scripts/check-characters.js --network optimismSepolia"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "hardhat": "^2.22.17",
+    "dotenv": "^16.4.5"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.9.6"
+  }
+}
+
+

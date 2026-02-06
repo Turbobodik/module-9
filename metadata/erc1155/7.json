@@ -1,0 +1,14 @@
+{
+  "name": "Character #7 — Crimson Rogue",
+  "description": "ERC-1155 game character collectible.",
+  "image": "https://green-fantastic-moose-963.mypinata.cloud/ipfs/bafybeig724lopkc4cuqleai3s7zodhtvb76mscuaokf3ja2srk6q7ubia4",
+  "attributes": [
+    { "trait_type": "class", "value": "rogue" },
+    { "trait_type": "element", "value": "shadow" },
+    { "trait_type": "speed", "value": 90 },
+    { "trait_type": "strength", "value": 61 },
+    { "trait_type": "rarity", "value": "epic" }
+  ]
+}
+
+

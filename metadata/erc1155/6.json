@@ -1,0 +1,14 @@
+{
+  "name": "Character #6 — Dune Guardian",
+  "description": "ERC-1155 game character collectible.",
+  "image": "https://green-fantastic-moose-963.mypinata.cloud/ipfs/bafybeie3ru5tf4gdahybuurvngfyxnhm6zfpbbubn4ch24wl6hp4ensaka",
+  "attributes": [
+    { "trait_type": "class", "value": "guardian" },
+    { "trait_type": "element", "value": "sand" },
+    { "trait_type": "speed", "value": 48 },
+    { "trait_type": "strength", "value": 82 },
+    { "trait_type": "rarity", "value": "uncommon" }
+  ]
+}
+
+

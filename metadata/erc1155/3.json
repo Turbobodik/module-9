@@ -1,0 +1,14 @@
+{
+  "name": "Character #3 — Verdant Ranger",
+  "description": "ERC-1155 game character collectible.",
+  "image": "https://green-fantastic-moose-963.mypinata.cloud/ipfs/bafybeibqwieioopghn6kpgivldsaabbgomfiihoh4fu5q7rfa5dr24d42y",
+  "attributes": [
+    { "trait_type": "class", "value": "ranger" },
+    { "trait_type": "element", "value": "nature" },
+    { "trait_type": "speed", "value": 85 },
+    { "trait_type": "strength", "value": 60 },
+    { "trait_type": "rarity", "value": "uncommon" }
+  ]
+}
+
+

@@ -1,0 +1,14 @@
+{
+  "name": "Character #8 — Storm Shaman",
+  "description": "ERC-1155 game character collectible.",
+  "image": "https://green-fantastic-moose-963.mypinata.cloud/ipfs/bafybeidy74zfti25dm4eukfm74anqvtlw4hj3eef6drfqwrx3xbnr775ti",
+  "attributes": [
+    { "trait_type": "class", "value": "shaman" },
+    { "trait_type": "element", "value": "lightning" },
+    { "trait_type": "speed", "value": 74 },
+    { "trait_type": "strength", "value": 64 },
+    { "trait_type": "rarity", "value": "rare" }
+  ]
+}
+
+

@@ -1,0 +1,14 @@
+{
+  "name": "Character #10 — Celestial Paladin",
+  "description": "ERC-1155 game character collectible.",
+  "image": "https://green-fantastic-moose-963.mypinata.cloud/ipfs/bafybeifa5baw7ydhvi2wjpk3g7a3gqfeqdgodw7jfyusyt4oucttklgfm4",
+  "attributes": [
+    { "trait_type": "class", "value": "paladin" },
+    { "trait_type": "element", "value": "light" },
+    { "trait_type": "speed", "value": 60 },
+    { "trait_type": "strength", "value": 90 },
+    { "trait_type": "rarity", "value": "legendary" }
+  ]
+}
+
+

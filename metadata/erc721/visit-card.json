@@ -1,0 +1,13 @@
+{
+  "name": "Student Visit Card — Bahdan",
+  "description": "Soulbound student visit card NFT (non-transferable).",
+  "image": "https://green-fantastic-moose-963.mypinata.cloud/ipfs/bafybeiacgvtgbc2pusx564tapwjrptbumvrqupr4wr77cpjpogk5awbf7u",
+  "attributes": [
+    { "trait_type": "studentName", "value": "Bahdan" },
+    { "trait_type": "studentID", "value": "S-2025-009" },
+    { "trait_type": "course", "value": "Blockchain Development" },
+    { "trait_type": "year", "value": "2025" }
+  ]
+}
+
+

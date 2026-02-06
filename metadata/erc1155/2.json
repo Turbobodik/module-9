@@ -1,0 +1,14 @@
+{
+  "name": "Character #2 — Ember Knight",
+  "description": "ERC-1155 game character collectible.",
+  "image": "https://green-fantastic-moose-963.mypinata.cloud/ipfs/bafybeiav5gxzynzj2uxinalakyxgmlardaz5d353sb322zi5iq2ymom3gm",
+  "attributes": [
+    { "trait_type": "class", "value": "knight" },
+    { "trait_type": "element", "value": "fire" },
+    { "trait_type": "speed", "value": 62 },
+    { "trait_type": "strength", "value": 88 },
+    { "trait_type": "rarity", "value": "rare" }
+  ]
+}
+
+
