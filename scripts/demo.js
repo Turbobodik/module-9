@@ -3,6 +3,31 @@ const { isAddress, getAddress } = require("ethers");
 
 const DEFAULT_IDS = "1,2";
 const DEFAULT_AMOUNTS = "1,1";
+const DEFAULT_CODE_ATTEMPTS = 12;
+const DEFAULT_CODE_DELAY_MS = 2500;
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function waitForCode(provider, address, label) {
+  const attempts = Number(process.env.WAIT_FOR_CODE_ATTEMPTS || DEFAULT_CODE_ATTEMPTS);
+  const delayMs = Number(process.env.WAIT_FOR_CODE_DELAY_MS || DEFAULT_CODE_DELAY_MS);
+
+  for (let i = 1; i <= attempts; i++) {
+    const code = await provider.getCode(address);
+    if (code && code !== "0x") {
+      return;
+    }
+    if (i < attempts) {
+      await sleep(delayMs);
+    }
+  }
+
+  throw new Error(
+    `${label} has no code at ${address}. Check network, RPC, or deployment tx confirmation.`
+  );
+}
 
 function parseAddress(value, envName) {
   const trimmed = (value || "").trim();
@@ -81,22 +106,31 @@ async function main() {
   const charactersAddress = parseAddress(process.env.CHARACTERS_CONTRACT, "CHARACTERS_CONTRACT");
 
   let visitCard;
+  let visitCardAddressFinal;
   if (visitCardAddress) {
     visitCard = await hre.ethers.getContractAt("SoulboundVisitCardERC721", visitCardAddress);
     console.log("Using existing SoulboundVisitCardERC721:", visitCardAddress);
+    visitCardAddressFinal = visitCardAddress;
   } else {
     visitCard = await deployVisitCard();
-    console.log("Deployed SoulboundVisitCardERC721:", await visitCard.getAddress());
+    visitCardAddressFinal = await visitCard.getAddress();
+    console.log("Deployed SoulboundVisitCardERC721:", visitCardAddressFinal);
   }
 
   let characters;
+  let charactersAddressFinal;
   if (charactersAddress) {
     characters = await hre.ethers.getContractAt("GameCharacterCollectionERC1155", charactersAddress);
     console.log("Using existing GameCharacterCollectionERC1155:", charactersAddress);
+    charactersAddressFinal = charactersAddress;
   } else {
     characters = await deployCharacters();
-    console.log("Deployed GameCharacterCollectionERC1155:", await characters.getAddress());
+    charactersAddressFinal = await characters.getAddress();
+    console.log("Deployed GameCharacterCollectionERC1155:", charactersAddressFinal);
   }
+
+  await waitForCode(hre.ethers.provider, visitCardAddressFinal, "SoulboundVisitCardERC721");
+  await waitForCode(hre.ethers.provider, charactersAddressFinal, "GameCharacterCollectionERC1155");
 
   // Mint soulbound visit card (if not minted yet)
   const currentTokenId = await visitCard.tokenOfStudent(student);
