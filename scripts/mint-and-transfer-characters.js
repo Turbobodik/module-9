@@ -1,7 +1,25 @@
 const hre = require("hardhat");
 const { isAddress, getAddress } = require("ethers");
 
+function explorerBase(networkName) {
+  if (networkName === "optimismSepolia") return "https://sepolia-optimism.etherscan.io";
+  return "";
+}
+
+function link(base, type, value) {
+  return base ? `${base}/${type}/${value}` : value;
+}
+
+function addressLink(base, address) {
+  return link(base, "address", address);
+}
+
+function txLink(base, hash) {
+  return link(base, "tx", hash);
+}
+
 async function main() {
+  const explorer = explorerBase(hre.network.name);
   const contractAddressRaw = (process.env.CHARACTERS_CONTRACT || "").trim();
   const studentRaw = (process.env.STUDENT || "").trim();
   const idsCsv = process.env.IDS || "1,2";
@@ -48,16 +66,15 @@ async function main() {
   }
 
   const [owner] = await hre.ethers.getSigners();
-  console.log("Owner:", owner.address);
-  console.log("Student:", student);
-  console.log("Transfer IDs:", ids);
-  console.log("Transfer amounts:", amounts);
+  console.log("Owner:", addressLink(explorer, owner.address));
+  console.log("Student:", addressLink(explorer, student));
+  console.log("GameCharacterCollectionERC1155:", addressLink(explorer, contractAddress));
 
   const contract = await hre.ethers.getContractAt("GameCharacterCollectionERC1155", contractAddress);
 
   if (!(await contract.initialCollectionMinted())) {
     const mintTx = await contract.mintInitialCollection(owner.address);
-    console.log("mintInitialCollection tx:", mintTx.hash);
+    console.log("mintInitialCollection:", txLink(explorer, mintTx.hash));
     await mintTx.wait();
   }
 
@@ -73,15 +90,9 @@ async function main() {
   }
 
   const transferTx = await contract.safeBatchTransferFrom(owner.address, student, ids, amounts, "0x");
-  console.log("safeBatchTransferFrom tx:", transferTx.hash);
+  console.log("safeBatchTransferFrom:", txLink(explorer, transferTx.hash));
   await transferTx.wait();
 
-  for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
-    const ownerBal = await contract.balanceOf(owner.address, id);
-    const studentBal = await contract.balanceOf(student, id);
-    console.log(`ID ${id}: owner=${ownerBal.toString()} student=${studentBal.toString()}`);
-  }
 }
 
 main().catch((err) => {

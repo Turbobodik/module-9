@@ -1,7 +1,25 @@
 const hre = require("hardhat");
 const { isAddress } = require("ethers");
 
+function explorerBase(networkName) {
+  if (networkName === "optimismSepolia") return "https://sepolia-optimism.etherscan.io";
+  return "";
+}
+
+function link(base, type, value) {
+  return base ? `${base}/${type}/${value}` : value;
+}
+
+function addressLink(base, address) {
+  return link(base, "address", address);
+}
+
+function txLink(base, hash) {
+  return link(base, "tx", hash);
+}
+
 async function main() {
+  const explorer = explorerBase(hre.network.name);
   const contractAddress = (process.env.VISIT_CARD_CONTRACT || "").trim();
   const student = (process.env.STUDENT || "").trim();
   const txHash = (process.env.TX || "").trim();
@@ -16,8 +34,8 @@ async function main() {
 
   const bal = await contract.balanceOf(student);
   const tokenId = await contract.tokenOfStudent(student);
-  console.log("Contract:", contractAddress);
-  console.log("Student:", student);
+  console.log("SoulboundVisitCardERC721:", addressLink(explorer, contractAddress));
+  console.log("Student:", addressLink(explorer, student));
   console.log("balanceOf(student):", bal.toString());
   console.log("tokenOfStudent(student):", tokenId.toString());
 
@@ -31,6 +49,7 @@ async function main() {
   if (txHash) {
     if (!/^0x([A-Fa-f0-9]{64})$/.test(txHash)) throw new Error(`Invalid TX hash: "${txHash}"`);
     const receipt = await hre.ethers.provider.getTransactionReceipt(txHash);
+    console.log("tx:", txLink(explorer, txHash));
     console.log("TX status:", receipt?.status);
     console.log("TX block:", receipt?.blockNumber);
     const transferTopic = hre.ethers.id("Transfer(address,address,uint256)");
