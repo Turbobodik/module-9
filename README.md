@@ -42,4 +42,6 @@ Transactions:
 - ERC-1155 batch mint (10 IDs): https://sepolia-optimism.etherscan.io/tx/0xff08c5af4776d9b2c9cb5dd8466f8cea18b4bc4aa869e29ff1600490f4b7475e
 - ERC-1155 batch transfer (IDs 1,2): https://sepolia-optimism.etherscan.io/tx/0x62e31385f4b475427c18508eabb789a4d4b8f4bb5f3789bcc649f4a20b2288dd
 
+[SCREEENSHOT TO SHOW NFTS IN MY ACCOUNT](/proof.jpeg)
+
 
