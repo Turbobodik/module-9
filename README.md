@@ -17,7 +17,7 @@ All-in-one demo:
   npx hardhat run scripts/demo.js --network optimismSepolia
 ```
 
-Here is output from my run
+Here is output from my run:
 @Turbobodik ➜ /workspaces/module-9 (2b30f09) $ npm run demo
 
 > module-9-nft-contracts@1.0.0 demo
