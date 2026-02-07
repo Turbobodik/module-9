@@ -1,7 +1,25 @@
 const hre = require("hardhat");
 const { isAddress } = require("ethers");
 
+function explorerBase(networkName) {
+  if (networkName === "optimismSepolia") return "https://sepolia-optimism.etherscan.io";
+  return "";
+}
+
+function link(base, type, value) {
+  return base ? `${base}/${type}/${value}` : value;
+}
+
+function addressLink(base, address) {
+  return link(base, "address", address);
+}
+
+function txLink(base, hash) {
+  return link(base, "tx", hash);
+}
+
 async function main() {
+  const explorer = explorerBase(hre.network.name);
   const contractAddress = process.env.VISIT_CARD_CONTRACT;
   const student = process.env.STUDENT;
   const tokenUri = process.env.TOKEN_URI;
@@ -21,17 +39,17 @@ async function main() {
   }
 
   const [owner] = await hre.ethers.getSigners();
-  console.log("Owner:", owner.address);
-  console.log("Minting to student:", student);
-  console.log("tokenURI:", tokenUri);
+  console.log("Owner:", addressLink(explorer, owner.address));
+  console.log("Student:", addressLink(explorer, student));
+  console.log("SoulboundVisitCardERC721:", addressLink(explorer, contractAddress));
 
   const contract = await hre.ethers.getContractAt("SoulboundVisitCardERC721", contractAddress);
   const tx = await contract.mintVisitCard(student, tokenUri);
-  console.log("mintVisitCard tx:", tx.hash);
+  console.log("mintVisitCard:", txLink(explorer, tx.hash));
   await tx.wait();
 
   const tokenId = await contract.tokenOfStudent(student);
-  console.log("Student tokenId:", tokenId.toString());
+  console.log("tokenId:", tokenId.toString());
 }
 
 main().catch((err) => {

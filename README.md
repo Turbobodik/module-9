@@ -1,72 +1,76 @@
 # NFT Contracts: Soulbound Visit Card (ERC-721) + Game Characters (ERC-1155)
 
-Short reference implementation using OpenZeppelin, Solidity 0.8.20, and Hardhat.
+Solidity 0.8.20 contracts built on OpenZeppelin with IPFS metadata.
 
-## Contracts
-- **SoulboundVisitCardERC721.sol**
-  - ERC-721 + URI storage.
-  - One token per student, **non-transferable** (transfers + approvals revert).
-  - Only owner/admin can mint.
-- **GameCharacterCollectionERC1155.sol**
-  - ERC-1155 with **10 fixed IDs (1-10)**.
-  - Unique URI per ID, normal transfers + approvals.
-  - Owner-only batch minting.
+## Deliverables
+- `contracts/SoulboundVisitCardERC721.sol`
+- `contracts/GameCharacterCollectionERC1155.sol`
+- `scripts/` (deploy, mint, demo, checks)
+- `README.md` (deploy, mint, metadata, proof)
 
 ## Metadata (IPFS)
-- ERC-721 sample: `metadata/erc721/visit-card.json`
+- ERC-721: `metadata/erc721/visit-card.json`
   - `image` + attributes like `studentName`, `studentID`, `course`, `year`.
-- ERC-1155 samples: `metadata/erc1155/1.json` ... `10.json`
+- ERC-1155: `metadata/erc1155/1.json` … `10.json`
   - `image` + attributes like `class`, `element`, `speed`, `strength`, `rarity`.
-- Upload JSON/images to IPFS.
-  - ERC-721 token URI: `ipfs://<cid>/visit-card.json`
-  - ERC-1155 base: `ipfs://<cid>/<id>.json`
+- Token URIs
+  - ERC-721: `ipfs://<cid>/visit-card.json`
+  - ERC-1155: `ipfs://<cid>/<id>.json`
 
-## Quickstart (local Hardhat)
+## Deploy (Optimism Sepolia)
 ```bash
 npm install
 npx hardhat compile
-npx hardhat node
 ```
 
-### Deploy
 ```bash
-npm run deploy:erc721:localhost
-CHARACTER_CID=<cid> npm run deploy:erc1155:localhost
+export OPTIMISM_SEPOLIA_URL="https://sepolia.optimism.io"
+export PRIVATE_KEY="<deployer_private_key>"
+export CHARACTER_CID="<ipfs_cid_for_erc1155_json>"
 ```
 
-### Mint soulbound visit card (owner only)
 ```bash
-VISIT_CARD_CONTRACT=<addr> STUDENT=<0x...> TOKEN_URI=ipfs://<cid>/visit-card.json \
-  npm run mint:erc721:localhost
+npx hardhat run scripts/deploy-visit-card.js --network optimismSepolia
+CHARACTER_CID=<cid> npx hardhat run scripts/deploy-characters.js --network optimismSepolia
 ```
 
-### Mint + batch transfer game characters
+## Mint
+Soulbound visit card (owner only):
 ```bash
-CHARACTERS_CONTRACT=<addr> STUDENT=<0x...> IDS=1,2 AMOUNTS=1,1 \
-  npm run mint+transfer:erc1155:localhost
+VISIT_CARD_CONTRACT=<address> STUDENT=<address> TOKEN_URI=ipfs://<cid>/visit-card.json \
+  npx hardhat run scripts/mint-visit-card.js --network optimismSepolia
 ```
-This script batch mints IDs 1-10 (1 each) to the owner, then batch transfers `IDS` to the student.
 
-### All-in-one demo script
+Game characters (batch mint + batch transfer):
 ```bash
-STUDENT=<0x...> VISIT_CARD_CID=<cid> CHARACTER_CID=<cid> \
-  npm run demo:localhost
+CHARACTERS_CONTRACT=<address> STUDENT=<address> IDS=1,2 AMOUNTS=1,1 \
+  npx hardhat run scripts/mint-and-transfer-characters.js --network optimismSepolia
 ```
-Optional: `VISIT_CARD_CONTRACT` / `CHARACTERS_CONTRACT` to reuse deployments, and `IDS` / `AMOUNTS` to control batch transfers.
 
-### Update ERC-1155 URIs (optional)
+All-in-one demo:
 ```bash
-CHARACTERS_CONTRACT=<addr> CHARACTER_CID=<cid> \
-  npm run set:erc1155:uris:opsepolia
+STUDENT=<address> VISIT_CARD_CONTRACT=<address> CHARACTERS_CONTRACT=<address> TOKEN_URI=ipfs://<cid>/visit-card.json \
+  npx hardhat run scripts/demo.js --network optimismSepolia
 ```
 
-## Checks (read-only)
+## Checks
 ```bash
-VISIT_CARD_CONTRACT=<addr> STUDENT=<0x...> npm run check:erc721:opsepolia
-CHARACTERS_CONTRACT=<addr> STUDENT=<0x...> npm run check:erc1155:opsepolia
+VISIT_CARD_CONTRACT=<address> STUDENT=<address> \
+  npx hardhat run scripts/check-visit-card.js --network optimismSepolia
+
+CHARACTERS_CONTRACT=<address> STUDENT=<address> \
+  npx hardhat run scripts/check-characters.js --network optimismSepolia
 ```
 
-## Proof (fill after deployment)
-- ERC-721 mint tx: `<tx hash>`
-- ERC-1155 mintInitialCollection tx: `<tx hash>`
-- ERC-1155 batch transfer tx: `<tx hash>`
+## Proof of Functionality (Optimism Sepolia)
+Contracts:
+- SoulboundVisitCardERC721: https://sepolia-optimism.etherscan.io/address/0xA615C227840Dfc762629143A1C0e9064C590De23
+- GameCharacterCollectionERC1155: https://sepolia-optimism.etherscan.io/address/0xc5b338d6014607A9B5337BAA0f603fB0924af6E9
+
+Student wallet:
+- https://sepolia-optimism.etherscan.io/address/0xD8C5A3c26016E1f7E1633Ca60D98416cFf8D7ef6
+
+Transactions:
+- ERC-721 mint: https://sepolia-optimism.etherscan.io/tx/0xfc5b571ce1ac85ac5c5e0dd5a62a6214b2f68b172e187c6e102db331b4058e86
+- ERC-1155 batch mint (10 IDs): https://sepolia-optimism.etherscan.io/tx/0xff08c5af4776d9b2c9cb5dd8466f8cea18b4bc4aa869e29ff1600490f4b7475e
+- ERC-1155 batch transfer (IDs 1,2): https://sepolia-optimism.etherscan.io/tx/0x62e31385f4b475427c18508eabb789a4d4b8f4bb5f3789bcc649f4a20b2288dd

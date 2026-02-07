@@ -12,6 +12,23 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function explorerBase(networkName) {
+  if (networkName === "optimismSepolia") return "https://sepolia-optimism.etherscan.io";
+  return "";
+}
+
+function link(base, type, value) {
+  return base ? `${base}/${type}/${value}` : value;
+}
+
+function addressLink(base, address) {
+  return link(base, "address", address);
+}
+
+function txLink(base, hash) {
+  return link(base, "tx", hash);
+}
+
 async function waitForCode(provider, address, label) {
   const attempts = Number(process.env.WAIT_FOR_CODE_ATTEMPTS || DEFAULT_CODE_ATTEMPTS);
   const delayMs = Number(process.env.WAIT_FOR_CODE_DELAY_MS || DEFAULT_CODE_DELAY_MS);
@@ -110,6 +127,7 @@ async function deployCharacters() {
 }
 
 async function main() {
+  const explorer = explorerBase(hre.network.name);
   const student = parseAddress(process.env.STUDENT, "STUDENT");
   if (!student) {
     throw new Error("Missing env var: STUDENT");
@@ -122,8 +140,8 @@ async function main() {
   }
 
   const [owner] = await hre.ethers.getSigners();
-  console.log("Owner:", owner.address);
-  console.log("Student:", student);
+  console.log("Owner:", addressLink(explorer, owner.address));
+  console.log("Student:", addressLink(explorer, student));
   const sameWallet = owner.address.toLowerCase() === student.toLowerCase();
 
   const visitCardAddress = parseAddress(process.env.VISIT_CARD_CONTRACT, "VISIT_CARD_CONTRACT");
@@ -133,50 +151,45 @@ async function main() {
   let visitCardAddressFinal;
   if (visitCardAddress) {
     visitCard = await hre.ethers.getContractAt("SoulboundVisitCardERC721", visitCardAddress);
-    console.log("Using existing SoulboundVisitCardERC721:", visitCardAddress);
     visitCardAddressFinal = visitCardAddress;
   } else {
     visitCard = await deployVisitCard();
     visitCardAddressFinal = await visitCard.getAddress();
-    console.log("Deployed SoulboundVisitCardERC721:", visitCardAddressFinal);
   }
+  console.log("SoulboundVisitCardERC721:", addressLink(explorer, visitCardAddressFinal));
 
   let characters;
   let charactersAddressFinal;
   if (charactersAddress) {
     characters = await hre.ethers.getContractAt("GameCharacterCollectionERC1155", charactersAddress);
-    console.log("Using existing GameCharacterCollectionERC1155:", charactersAddress);
     charactersAddressFinal = charactersAddress;
   } else {
     characters = await deployCharacters();
     charactersAddressFinal = await characters.getAddress();
-    console.log("Deployed GameCharacterCollectionERC1155:", charactersAddressFinal);
   }
+  console.log("GameCharacterCollectionERC1155:", addressLink(explorer, charactersAddressFinal));
 
   await waitForCode(hre.ethers.provider, visitCardAddressFinal, "SoulboundVisitCardERC721");
   await waitForCode(hre.ethers.provider, charactersAddressFinal, "GameCharacterCollectionERC1155");
 
-  // Mint soulbound visit card (if not minted yet)
   const currentTokenId = await visitCard.tokenOfStudent(student);
   if (currentTokenId === 0n) {
     const tokenUri = getVisitCardTokenUri();
     const mintTx = await visitCard.mintVisitCard(student, tokenUri);
-    console.log("mintVisitCard tx:", mintTx.hash);
+    console.log("mintVisitCard:", txLink(explorer, mintTx.hash));
     await mintTx.wait();
   } else {
-    console.log("Visit card already minted. tokenId:", currentTokenId.toString());
+    console.log("Visit card tokenId:", currentTokenId.toString());
   }
 
-  // Mint initial character collection to owner (batch mint)
   if (!(await characters.initialCollectionMinted())) {
     const mintTx = await characters.mintInitialCollection(owner.address);
-    console.log("mintInitialCollection tx:", mintTx.hash);
+    console.log("mintInitialCollection:", txLink(explorer, mintTx.hash));
     await mintTx.wait();
   } else {
-    console.log("Initial character collection already minted.");
+    console.log("Character collection: already minted");
   }
 
-  // Batch transfer selected character IDs to student
   await waitForBalances(characters, owner.address, ids, amounts);
   for (let i = 0; i < ids.length; i++) {
     const ownerBal = await characters.balanceOf(owner.address, ids[i]);
@@ -187,27 +200,15 @@ async function main() {
     }
   }
   if (sameWallet) {
-    console.log("Owner and student are the same address; skipping batch transfer.");
+    console.log("Transfer skipped: owner and student are the same address.");
   } else {
     const transferTx = await characters.safeBatchTransferFrom(owner.address, student, ids, amounts, "0x");
-    console.log("safeBatchTransferFrom tx:", transferTx.hash);
+    console.log("safeBatchTransferFrom:", txLink(explorer, transferTx.hash));
     await transferTx.wait();
   }
 
-  // Summary checks
-  const mintedTokenId = await visitCard.tokenOfStudent(student);
-  const visitCardUri = mintedTokenId === 0n ? "" : await visitCard.tokenURI(mintedTokenId);
-  console.log("Visit card tokenId:", mintedTokenId.toString());
-  if (visitCardUri) console.log("Visit card tokenURI:", visitCardUri);
-
-  console.log("Student character balances:");
-  for (let id = 1; id <= 10; id++) {
-    const bal = await characters.balanceOf(student, id);
-    if (bal > 0n) {
-      const uri = await characters.uri(id);
-      console.log(`  ID ${id}: ${bal.toString()} (URI: ${uri})`);
-    }
-  }
+  const finalTokenId = await visitCard.tokenOfStudent(student);
+  console.log("Visit card tokenId:", finalTokenId.toString());
 }
 
 main().catch((err) => {

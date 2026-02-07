@@ -1,7 +1,21 @@
 const hre = require("hardhat");
 const { isAddress } = require("ethers");
 
+function explorerBase(networkName) {
+  if (networkName === "optimismSepolia") return "https://sepolia-optimism.etherscan.io";
+  return "";
+}
+
+function link(base, type, value) {
+  return base ? `${base}/${type}/${value}` : value;
+}
+
+function addressLink(base, address) {
+  return link(base, "address", address);
+}
+
 async function main() {
+  const explorer = explorerBase(hre.network.name);
   const contractAddress = (process.env.CHARACTERS_CONTRACT || "").trim();
   const student = (process.env.STUDENT || "").trim();
 
@@ -13,8 +27,8 @@ async function main() {
 
   const contract = await hre.ethers.getContractAt("GameCharacterCollectionERC1155", contractAddress);
 
-  console.log("Contract:", contractAddress);
-  console.log("Student:", student);
+  console.log("GameCharacterCollectionERC1155:", addressLink(explorer, contractAddress));
+  console.log("Student:", addressLink(explorer, student));
   console.log("\nCharacter Balances:");
 
   for (let id = 1; id <= 10; id++) {
