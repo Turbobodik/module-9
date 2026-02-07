@@ -6,11 +6,12 @@
   "scripts": {
     "compile": "hardhat compile",
     "test": "hardhat test",
-    "deploy:erc721:opsepolia": "hardhat run scripts/deploy-visit-card.js --network optimismSepolia",
-    "deploy:erc1155:opsepolia": "hardhat run scripts/deploy-characters.js --network optimismSepolia",
-    "mint:erc721:opsepolia": "hardhat run scripts/mint-visit-card.js --network optimismSepolia",
-    "mint+transfer:erc1155:opsepolia": "hardhat run scripts/mint-and-transfer-characters.js --network optimismSepolia",
-    "demo:opsepolia": "hardhat run scripts/demo.js --network optimismSepolia",
+    "node": "hardhat node",
+    "deploy:erc721:localhost": "hardhat run scripts/deploy-visit-card.js --network localhost",
+    "deploy:erc1155:localhost": "hardhat run scripts/deploy-characters.js --network localhost",
+    "mint:erc721:localhost": "hardhat run scripts/mint-visit-card.js --network localhost",
+    "mint+transfer:erc1155:localhost": "hardhat run scripts/mint-and-transfer-characters.js --network localhost",
+    "demo": "hardhat run scripts/demo.js --network optimismSepolia",
     "set:erc1155:uris:opsepolia": "hardhat run scripts/set-character-uris.js --network optimismSepolia",
     "check:erc721:opsepolia": "hardhat run scripts/check-visit-card.js --network optimismSepolia",
     "check:erc1155:opsepolia": "hardhat run scripts/check-characters.js --network optimismSepolia"
