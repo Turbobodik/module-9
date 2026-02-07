@@ -47,6 +47,13 @@ CHARACTERS_CONTRACT=<addr> STUDENT=<0x...> IDS=1,2 AMOUNTS=1,1 \
 ```
 This script batch mints IDs 1-10 (1 each) to the owner, then batch transfers `IDS` to the student.
 
+### All-in-one demo script
+```bash
+STUDENT=<0x...> VISIT_CARD_CID=<cid> CHARACTER_CID=<cid> \
+  npm run demo:localhost
+```
+Optional: `VISIT_CARD_CONTRACT` / `CHARACTERS_CONTRACT` to reuse deployments, and `IDS` / `AMOUNTS` to control batch transfers.
+
 ### Update ERC-1155 URIs (optional)
 ```bash
 CHARACTERS_CONTRACT=<addr> CHARACTER_CID=<cid> \

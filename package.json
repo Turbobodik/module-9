@@ -11,6 +11,7 @@
     "deploy:erc1155:localhost": "hardhat run scripts/deploy-characters.js --network localhost",
     "mint:erc721:localhost": "hardhat run scripts/mint-visit-card.js --network localhost",
     "mint+transfer:erc1155:localhost": "hardhat run scripts/mint-and-transfer-characters.js --network localhost",
+    "demo:localhost": "hardhat run scripts/demo.js --network localhost",
     "set:erc1155:uris:opsepolia": "hardhat run scripts/set-character-uris.js --network optimismSepolia",
     "check:erc721:opsepolia": "hardhat run scripts/check-visit-card.js --network optimismSepolia",
     "check:erc1155:opsepolia": "hardhat run scripts/check-characters.js --network optimismSepolia"
