@@ -5,6 +5,8 @@ const DEFAULT_IDS = "1,2";
 const DEFAULT_AMOUNTS = "1,1";
 const DEFAULT_CODE_ATTEMPTS = 12;
 const DEFAULT_CODE_DELAY_MS = 2500;
+const DEFAULT_BALANCE_ATTEMPTS = 12;
+const DEFAULT_BALANCE_DELAY_MS = 2500;
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -27,6 +29,27 @@ async function waitForCode(provider, address, label) {
   throw new Error(
     `${label} has no code at ${address}. Check network, RPC, or deployment tx confirmation.`
   );
+}
+
+async function waitForBalances(contract, owner, ids, amounts) {
+  if (!ids.length) return;
+  const attempts = Number(process.env.WAIT_FOR_BALANCE_ATTEMPTS || DEFAULT_BALANCE_ATTEMPTS);
+  const delayMs = Number(process.env.WAIT_FOR_BALANCE_DELAY_MS || DEFAULT_BALANCE_DELAY_MS);
+
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    let allEnough = true;
+    for (let i = 0; i < ids.length; i++) {
+      const bal = await contract.balanceOf(owner, ids[i]);
+      if (bal < BigInt(amounts[i])) {
+        allEnough = false;
+        break;
+      }
+    }
+    if (allEnough) return;
+    if (attempt < attempts) {
+      await sleep(delayMs);
+    }
+  }
 }
 
 function parseAddress(value, envName) {
@@ -101,6 +124,7 @@ async function main() {
   const [owner] = await hre.ethers.getSigners();
   console.log("Owner:", owner.address);
   console.log("Student:", student);
+  const sameWallet = owner.address.toLowerCase() === student.toLowerCase();
 
   const visitCardAddress = parseAddress(process.env.VISIT_CARD_CONTRACT, "VISIT_CARD_CONTRACT");
   const charactersAddress = parseAddress(process.env.CHARACTERS_CONTRACT, "CHARACTERS_CONTRACT");
@@ -153,6 +177,7 @@ async function main() {
   }
 
   // Batch transfer selected character IDs to student
+  await waitForBalances(characters, owner.address, ids, amounts);
   for (let i = 0; i < ids.length; i++) {
     const ownerBal = await characters.balanceOf(owner.address, ids[i]);
     if (ownerBal < BigInt(amounts[i])) {
@@ -161,9 +186,13 @@ async function main() {
       );
     }
   }
-  const transferTx = await characters.safeBatchTransferFrom(owner.address, student, ids, amounts, "0x");
-  console.log("safeBatchTransferFrom tx:", transferTx.hash);
-  await transferTx.wait();
+  if (sameWallet) {
+    console.log("Owner and student are the same address; skipping batch transfer.");
+  } else {
+    const transferTx = await characters.safeBatchTransferFrom(owner.address, student, ids, amounts, "0x");
+    console.log("safeBatchTransferFrom tx:", transferTx.hash);
+    await transferTx.wait();
+  }
 
   // Summary checks
   const mintedTokenId = await visitCard.tokenOfStudent(student);
